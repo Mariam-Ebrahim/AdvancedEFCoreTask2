@@ -1,4 +1,5 @@
 using AdvancedEFCore.Data;
+using AdvancedEFCore.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     );
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
 
