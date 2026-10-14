@@ -1,5 +1,6 @@
 ﻿using AdvancedEFCore.Data;
 using AdvancedEFCore.DTOs;
+using AdvancedEFCore.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,20 +21,13 @@ namespace AdvancedEFCore.Controllers
         public async Task<ActionResult<PagedResult<ProductDto>>> GetAll(
             int pageNumber = 1, int pageSize = 10, string? search = null)
         {
-            pageNumber = Math.Max(pageNumber, 1);
-            pageSize = Math.Clamp(pageSize, 1, 50);
-
             var query = _context.Products.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(p => p.Name.Contains(search));
 
-            var totalCount = await query.CountAsync();
-
-            var items = await query
+            var result = await query
                 .OrderBy(p => p.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .Select(p => new ProductDto
                 {
                     Id = p.Id,
@@ -42,15 +36,9 @@ namespace AdvancedEFCore.Controllers
                     CategoryName = p.Category.Name,
                     RowVersion = p.RowVersion
                 })
-                .ToListAsync();
+                .ToPagedResultAsync(pageNumber, pageSize);
 
-            return Ok(new PagedResult<ProductDto>
-            {
-                Items = items,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalCount = totalCount
-            });
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
