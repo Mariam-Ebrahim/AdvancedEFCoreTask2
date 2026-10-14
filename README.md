@@ -140,7 +140,6 @@ The database is seeded with 3 categories and 10 products.
 
 ## Possible next steps
 
-- Move the data access into a service layer
 - Switch the search to `StartsWith` (or add full-text search) so the index is fully used
 - Add a `POST` endpoint with validation
 - Add integration tests for the concurrency and soft-delete behavior
